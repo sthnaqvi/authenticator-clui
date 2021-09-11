@@ -1,0 +1,48 @@
+{
+  "name": "authenticator-clui",
+  "version": "1.0.0",
+  "description": "A simple command-line authenticator (import accounts from Google Authenticator, Microsoft Authenticator and Facebook Authenticator)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sthnaqvi/authenticator-clui.git"
+  },
+  "author": "Sayed Tauseef Naqvi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sthnaqvi/authenticator-clui/issues"
+  },
+  "homepage": "https://github.com/sthnaqvi/authenticator-clui#readme",
+  "keywords": [
+    "cli",
+    "command",
+    "authenticator",
+    "Google",
+    "Microsoft",
+    "Facebook",
+    "Authy",
+    "TOTP"
+  ],
+  "contributors": [
+    {
+      "name": "Sayed Tauseef Naqvi",
+      "email": "tauseef.naqvi786@gmail.com"
+    }
+  ],
+  "preferGlobal": true,
+  "bin": {
+    "authenticator": "bin.js"
+  },
+  "dependencies": {
+    "cli-table": "^0.3.6",
+    "commander": "^8.2.0",
+    "fs-extra": "^10.0.0",
+    "jetty": "^0.2.1",
+    "node-schedule": "^2.0.0",
+    "otplib": "^12.0.1",
+    "protobufjs": "^6.11.2"
+  }
+}

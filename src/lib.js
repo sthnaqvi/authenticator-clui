@@ -1,0 +1,71 @@
+'use strict';
+
+const otplib = require("otplib");
+const cron = require('node-schedule');
+const Table = require('cli-table');
+
+const log = require('./log');
+const accounts = require('./accounts');
+
+
+/**
+ * 
+ * @param {String} secret 
+ * @param {Number} intervel 
+ * @param {function} cb 
+ */
+function generate2FACode(secret, intervel, cb) {
+    if (intervel && typeof intervel == "function") {
+        cb = intervel;
+        intervel = 30;
+    };
+
+    const token = otplib.authenticator.generate(secret);
+    cb(token)
+    cron.scheduleJob(`*/${intervel} * * * * *`, function () {
+        const token = otplib.authenticator.generate(secret);
+        cb(token)
+    });
+};
+
+const getTimeout = (intervel = 30) => {
+    const curr_date = new Date();
+    const curr_seconds = curr_date.getSeconds();
+    return (intervel - curr_seconds % intervel)
+};
+
+// accounts.import("otpauth-migration://offline?data=xyz")
+
+function updateTotp(accounts) {
+    for (let account of accounts) {
+        generate2FACode(account.totpSecret, function (topt) {
+            account.name_with_issuer = account.issuer ? `${account.issuer}(${account.name})` : account.name;
+            account.totp = topt;
+        })
+    }
+}
+
+function run() {
+    let tr_timeout = 1000; //Table refresh timeout for expiry timer
+    let _accounts = accounts.get();
+    updateTotp(_accounts);
+    setInterval(function () {
+        // instantiate
+        const table = new Table({
+            head: ['Name', 'Auth Code', "Expire In"]
+            // , colWidths: [20, 30]
+        });
+        // table is an Array, so you can `push`, `unshift`, `splice` and friends
+        for (let account of _accounts) {
+            table.push([account.name_with_issuer, account.totp, getTimeout()])
+        }
+        log(table);
+    }, tr_timeout);
+}
+
+run()
+
+module.exports = {
+    run,
+    accounts
+}
