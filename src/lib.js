@@ -63,8 +63,6 @@ function run() {
     }, tr_timeout);
 }
 
-run()
-
 module.exports = {
     run,
     accounts
