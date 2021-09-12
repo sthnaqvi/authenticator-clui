@@ -34,8 +34,6 @@ const getTimeout = (intervel = 30) => {
     return (intervel - curr_seconds % intervel)
 };
 
-// accounts.import("otpauth-migration://offline?data=xyz")
-
 function updateTotp(accounts) {
     for (let account of accounts) {
         generate2FACode(account.totpSecret, function (topt) {
