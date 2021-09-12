@@ -46,21 +46,26 @@ function updateTotp(accounts) {
 }
 
 function run() {
+    console.log("Starting authenticator ...");
     let tr_timeout = 1000; //Table refresh timeout for expiry timer
     let _accounts = accounts.get();
-    updateTotp(_accounts);
-    setInterval(function () {
-        // instantiate
-        const table = new Table({
-            head: ['Name', 'Auth Code', "Expire In"]
-            // , colWidths: [20, 30]
-        });
-        // table is an Array, so you can `push`, `unshift`, `splice` and friends
-        for (let account of _accounts) {
-            table.push([account.name_with_issuer, account.totp, getTimeout()])
-        }
-        log(table);
-    }, tr_timeout);
+    if (_accounts && Object.keys(_accounts).length) {
+        updateTotp(_accounts);
+        setInterval(function () {
+            // instantiate
+            const table = new Table({
+                head: ['Name', 'Auth Code', "Expire In"]
+                // , colWidths: [20, 30]
+            });
+            // table is an Array, so you can `push`, `unshift`, `splice` and friends
+            for (let account of _accounts) {
+                table.push([account.name_with_issuer, account.totp, getTimeout()])
+            }
+            log(table)
+        }, tr_timeout);
+    } else {
+        throw "No accout found";
+    }
 }
 
 module.exports = {
