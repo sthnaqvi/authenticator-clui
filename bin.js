@@ -38,7 +38,6 @@ if (options && Object.keys(options).length) {
         }
         authenticator.run();
     }
-    process.exit(1);
 } else {
     program.help({ error: true });
 };

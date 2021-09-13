@@ -13,7 +13,7 @@ const BACKUP_ACCOUNT_FILE = 'accounts.txt';
  * @param {Uint8Array} payload 
  */
 function decodeProtobuf(payload) {
-    const root = protobuf.loadSync("src/google_auth.proto");
+    const root = protobuf.loadSync(path.join(__dirname, "google_auth.proto"));
 
     const MigrationPayload = root.lookupType("googleauth.MigrationPayload");
 
@@ -61,9 +61,10 @@ function decode(data) {
 }
 
 /**
- * 
+ * Parse accounts data from URI
  * @param {String} uri Google Authenticator exported accounts uri (Use QR reader to get this)
- * @returns 
+ * 
+ * @returns {Array} accounts data
  */
 function parseAccountsFromUri(uri) {
     const queryParams = new URL(uri).search;
@@ -72,29 +73,43 @@ function parseAccountsFromUri(uri) {
     return accounts
 }
 
+/**
+ * To check accounts data are exist
+ * @returns {Boolean} 
+ */
 function check() {
     const backup_file_path = path.join(BACKUP_DIR, BACKUP_ACCOUNT_FILE);
     try {
-        let account_data = fs.readFileSync(backup_file_path, 'utf-8');
-        account_data = JSON.parse(account_data);
-        return (account_data ? Object.keys(account_data).length : false);
+        let accounts_data = fs.readFileSync(backup_file_path, 'utf-8');
+        accounts_data = JSON.parse(accounts_data);
+        return (accounts_data ? Object.keys(accounts_data).length : false);
     } catch (error) {
         return false;
     }
 }
 
+/**
+ * Get accounts data
+ * 
+ * @returns {Array} 
+ */
 function get() {
     const backup_file_path = path.join(BACKUP_DIR, BACKUP_ACCOUNT_FILE);
     try {
-        let account_data = fs.readFileSync(backup_file_path, 'utf-8');
-        account_data = JSON.parse(account_data);
-        return account_data;
+        let accounts_data = fs.readFileSync(backup_file_path, 'utf-8');
+        accounts_data = JSON.parse(accounts_data);
+        return accounts_data;
     } catch (error) {
         //TODO: Hanlde error
         throw error;
     }
 }
 
+/**
+ * Seed accounts from URI
+ * 
+ * @param {String} uri 
+ */
 function seed(uri) {
     const backup_file_path = path.join(BACKUP_DIR, BACKUP_ACCOUNT_FILE);
     const accounts = parseAccountsFromUri(uri);
@@ -108,6 +123,10 @@ function seed(uri) {
     }
 }
 
+/**
+ * Delete accounts backup file from local
+ * 
+ */
 function flush() {
     const backup_file_path = path.join(BACKUP_DIR, BACKUP_ACCOUNT_FILE);
 

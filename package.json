@@ -34,7 +34,8 @@
   ],
   "preferGlobal": true,
   "bin": {
-    "authenticator": "bin.js"
+    "authenticator": "bin.js",
+    "auth": "bin.js"
   },
   "dependencies": {
     "cli-table": "^0.3.6",

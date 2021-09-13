@@ -28,12 +28,22 @@ function generate2FACode(secret, intervel, cb) {
     });
 };
 
+/**
+ * 
+ * @param {Number} intervel Default 30 secs
+ * 
+ * @returns {Number}
+ */
 const getTimeout = (intervel = 30) => {
     const curr_date = new Date();
     const curr_seconds = curr_date.getSeconds();
     return (intervel - curr_seconds % intervel)
 };
 
+/**
+ * Update TOTP account.totp with updated value
+ * @param {Array} accounts 
+ */
 function updateTotp(accounts) {
     for (let account of accounts) {
         generate2FACode(account.totpSecret, function (topt) {
@@ -43,11 +53,15 @@ function updateTotp(accounts) {
     }
 }
 
+/**
+ * Run authenticator on CMD
+ */
 function run() {
     console.log("Starting authenticator ...");
     let tr_timeout = 1000; //Table refresh timeout for expiry timer
     let _accounts = accounts.get();
     if (_accounts && Object.keys(_accounts).length) {
+        console.log(`${Object.keys(_accounts).length} account(s) found`);
         updateTotp(_accounts);
         setInterval(function () {
             // instantiate
