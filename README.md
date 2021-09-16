@@ -62,7 +62,9 @@ authenticator --import "otpauth-migration://offline?data=CicKFFFFNi94eGM5bGxUUWl
 Open Google Authenticator click on `...` then click Export accounts then click Continue select the account(s) which you want to export then click Export then you got the QRcode.
 Use [online QRcode decoder to decode](https://zxing.org) the QRcode and get the URI.
 
-![alt text](https://github.com/sthnaqvi/authenticator-clui/raw/master/readme_assets/export_authenticator_backup.gif "export URI from Google Authenticator")
+<p align="center">
+<img src="https://github.com/sthnaqvi/authenticator-clui/raw/master/readme_assets/export_authenticator_backup.gif" alt="export URI from Google Authenticator" height="550">
+</p>
 
 [back to top](#table-of-contents)
 ___
