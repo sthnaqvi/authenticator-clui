@@ -4,8 +4,10 @@ const fs = require("fs-extra");
 const base32 = require('./edbase32');
 const path = require("path");
 
-const BACKUP_DIR = 'local_data';
+const BACKUP_DIR = '../local_data';
 const BACKUP_ACCOUNT_FILE = 'accounts.txt';
+const BACKUP_DIR_FILE_PATH = path.join(__dirname, BACKUP_DIR);
+const BACKUP_ACCOUNT_FILE_PATH = path.join(BACKUP_DIR_FILE_PATH, BACKUP_ACCOUNT_FILE);
 
 /**
  * Google Authenticator uses protobuff to encode the 2fa data.
@@ -78,9 +80,8 @@ function parseAccountsFromUri(uri) {
  * @returns {Boolean} 
  */
 function check() {
-    const backup_file_path = path.join(BACKUP_DIR, BACKUP_ACCOUNT_FILE);
     try {
-        let accounts_data = fs.readFileSync(backup_file_path, 'utf-8');
+        let accounts_data = fs.readFileSync(BACKUP_ACCOUNT_FILE_PATH, 'utf-8');
         accounts_data = JSON.parse(accounts_data);
         return (accounts_data ? Object.keys(accounts_data).length : false);
     } catch (error) {
@@ -94,9 +95,8 @@ function check() {
  * @returns {Array} 
  */
 function get() {
-    const backup_file_path = path.join(BACKUP_DIR, BACKUP_ACCOUNT_FILE);
     try {
-        let accounts_data = fs.readFileSync(backup_file_path, 'utf-8');
+        let accounts_data = fs.readFileSync(BACKUP_ACCOUNT_FILE_PATH, 'utf-8');
         accounts_data = JSON.parse(accounts_data);
         return accounts_data;
     } catch (error) {
@@ -111,11 +111,10 @@ function get() {
  * @param {String} uri 
  */
 function seed(uri) {
-    const backup_file_path = path.join(BACKUP_DIR, BACKUP_ACCOUNT_FILE);
     const accounts = parseAccountsFromUri(uri);
     try {
-        fs.ensureDirSync(BACKUP_DIR)
-        fs.writeFileSync(backup_file_path, JSON.stringify(accounts));
+        fs.ensureDirSync(BACKUP_DIR_FILE_PATH)
+        fs.writeFileSync(BACKUP_ACCOUNT_FILE_PATH, JSON.stringify(accounts));
         console.log(`${accounts.length} account(s) imported successfully`);
     } catch (error) {
         //TODO: Hanlde error
@@ -128,10 +127,9 @@ function seed(uri) {
  * 
  */
 function flush() {
-    const backup_file_path = path.join(BACKUP_DIR, BACKUP_ACCOUNT_FILE);
 
     try {
-        fs.unlinkSync(backup_file_path);
+        fs.unlinkSync(BACKUP_ACCOUNT_FILE_PATH);
         console.log(`all account(s) deleted successfully`);
     } catch (error) {
         //TODO: Hanlde error
