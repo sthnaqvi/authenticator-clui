@@ -14,7 +14,7 @@
 
 A simple command-line authenticator (import accounts from Google Authenticator, Microsoft Authenticator and Facebook Authenticator)
 
-![alt text](https://github.com/sthnaqvi/explorer/raw/master/readme_assets/cli_authenticator.png "CLI Authenticator")
+![alt text](https://github.com/sthnaqvi/authenticator-clui/raw/master/readme_assets/cli_authenticator.png "CLI Authenticator")
 
 
 ## Table of contents
@@ -62,7 +62,7 @@ authenticator --import "otpauth-migration://offline?data=CicKFFFFNi94eGM5bGxUUWl
 Open Google Authenticator click on `...` then click Export accounts then click Continue select the account(s) which you want to export then click Export then you got the QRcode.
 Use [online QRcode decoder to decode](https://zxing.org) the QRcode and get the URI.
 
-![alt text](https://github.com/sthnaqvi/explorer/raw/master/readme_assets/export_authenticator_backup.gif "export URI from Google Authenticator")
+![alt text](https://github.com/sthnaqvi/authenticator-clui/raw/master/readme_assets/export_authenticator_backup.gif "export URI from Google Authenticator")
 
 [back to top](#table-of-contents)
 ___
