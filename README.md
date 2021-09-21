@@ -10,6 +10,8 @@
 [![Inline docs](http://inch-ci.org/github/sthnaqvi/authenticator-clui.svg?branch=master)](http://inch-ci.org/github/sthnaqvi/authenticator-clui)
 [![Known npm Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/npm/authenticator-clui.svg?label=npm%20vulnerabilities&style=flat-square)](https://snyk.io/test/npm/authenticator-clui)
 [![Known Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/sthnaqvi/authenticator-clui.svg?label=repo%20vulnerabilities&style=flat-square&targetFile=package.json)](https://snyk.io/test/github/sthnaqvi/authenticator-clui?targetFile=package.json)
+![Downloads Total](https://img.shields.io/npm/dt/authenticator-clui.svg)
+![Downloads Monthly](https://img.shields.io/npm/dm/authenticator-clui.svg)
 
 
 A simple command-line authenticator (import accounts from Google Authenticator, Microsoft Authenticator and Facebook Authenticator)
@@ -59,7 +61,11 @@ authenticator --import "otpauth-migration://offline?data=CicKFFFFNi94eGM5bGxUUWl
 ## Steps to export accounts from Google Authenticator
 
 ### Get accounts URI
-Open Google Authenticator click on `...` then click Export accounts then click Continue select the account(s) which you want to export then click Export then you got the QRcode.
+
+- Open `Google Authenticator` click on `...`
+- Click `Export accounts` 
+- Click `Continue` select the account(s) which you want to export
+- Click `Export` then you got the QRcode.
 Use [online QRcode decoder to decode](https://zxing.org) the QRcode and get the URI.
 
 <p align="center">
