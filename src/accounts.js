@@ -157,7 +157,7 @@ function seed(uri, password) {
         }
         fs.ensureDirSync(BACKUP_DIR_FILE_PATH)
         fs.writeFileSync(BACKUP_ACCOUNT_FILE_PATH, JSON.stringify(backup_file_data));
-        console.log(`${accountLength} account(s) imported successfully`);
+        console.log(`✅ ${accountLength} account(s) imported successfully`);
     } catch (error) {
         //TODO: Hanlde error
         throw error;

@@ -24,39 +24,42 @@ const processOpts = async (options) => {
 
         if (options.import) {
             if (authenticator.accounts.isValidBackupFile()) {
-                console.error("Accounts already exist, delete existing accounts before import");
+                console.error("🚫 Accounts already exist, delete existing accounts before import");
                 return program.help({ error: true });
             }
             if (options.encrypt) {
                 password = await passwordPrompt.start();
             };
-            authenticator.accounts.seed(options.import, password)
+            return authenticator.accounts.seed(options.import, password);
         }
 
         if (!options.force) {
             if (!authenticator.accounts.isValidBackupFile()) {
-                console.error("Accounts does not exist");
+                console.error("❌ Accounts does not exist");
                 return program.help({ error: true });
             }
             if (authenticator.accounts.isEncrypted()) {
                 password = await passwordPrompt.start();
             };
             if (!authenticator.accounts.isValid(password)) {
-                console.error(`${password ? "!!Invalid password" : "Account(s) are not valid."}`);
+                if (password) {
+                    return console.error("🚫 Invalid password. Please try again.");
+                }
+                console.error("❌ Account(s) are not valid.");
                 return program.help({ error: true });
             }
         }
 
         if (options.delete) {
-            authenticator.accounts.flushAll();
+            return authenticator.accounts.flushAll();
         }
 
         if (options.run) {
             if (options.force) {
-                console.error("Can't run with --force");
+                console.error("🚫 Can't run with --force");
                 return program.help({ error: true });
             }
-            authenticator.run(password);
+            return authenticator.run(password);
         }
     } else {
         program.help({ error: true });
