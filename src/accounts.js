@@ -1,8 +1,9 @@
 const protobuf = require("protobufjs");
 const fs = require("fs-extra");
+const path = require("path");
 
 const base32 = require('./edbase32');
-const path = require("path");
+const { encrypt, decrypt } = require('./encryption');
 
 const BACKUP_DIR = '../local_data';
 const BACKUP_ACCOUNT_FILE = 'accounts.txt';
@@ -76,14 +77,45 @@ function parseAccountsFromUri(uri) {
 }
 
 /**
- * To check accounts data are exist
+ * To validate accounts backup file exist
  * @returns {Boolean} 
  */
-function check() {
+function isValidBackupFile() {
     try {
-        let accounts_data = fs.readFileSync(BACKUP_ACCOUNT_FILE_PATH, 'utf-8');
-        accounts_data = JSON.parse(accounts_data);
-        return (accounts_data ? Object.keys(accounts_data).length : false);
+        let backup_file_data = fs.readFileSync(BACKUP_ACCOUNT_FILE_PATH, 'utf-8');
+        return typeof JSON.parse(backup_file_data) == "object";
+    } catch (error) {
+        return false;
+    }
+}
+
+/**
+ * To validate accounts data are encrypted
+ * @returns {Boolean} 
+ */
+function isEncrypted() {
+    try {
+        let backup_file_data = fs.readFileSync(BACKUP_ACCOUNT_FILE_PATH, 'utf-8');
+        let { is_encrypted } = JSON.parse(backup_file_data);
+        return is_encrypted;
+    } catch (error) {
+        //TODO: Hanlde error
+        throw error;
+    }
+}
+
+/**
+ * To validate accounts data are exist and it's valid
+ * @param {String} password 
+ * @returns {Boolean} 
+ */
+function isValid(password) {
+    try {
+        let backup_file_data = fs.readFileSync(BACKUP_ACCOUNT_FILE_PATH, 'utf-8');
+        let { is_encrypted, accounts } = JSON.parse(backup_file_data);
+        accounts = is_encrypted ? decrypt(accounts, password) : accounts;
+        accounts = JSON.parse(accounts);
+        return (accounts && Array.isArray(accounts) ? accounts.length : false);
     } catch (error) {
         return false;
     }
@@ -92,13 +124,16 @@ function check() {
 /**
  * Get accounts data
  * 
- * @returns {Array} 
+ * @param {String} password 
+ * @returns 
  */
-function get() {
+function get(password) {
     try {
-        let accounts_data = fs.readFileSync(BACKUP_ACCOUNT_FILE_PATH, 'utf-8');
-        accounts_data = JSON.parse(accounts_data);
-        return accounts_data;
+        let backup_file_data = fs.readFileSync(BACKUP_ACCOUNT_FILE_PATH, 'utf-8');
+        let { is_encrypted, accounts } = JSON.parse(backup_file_data);
+        accounts = is_encrypted ? decrypt(accounts, password) : accounts;
+        accounts = JSON.parse(accounts);
+        return accounts;
     } catch (error) {
         //TODO: Hanlde error
         throw error;
@@ -109,13 +144,20 @@ function get() {
  * Seed accounts from URI
  * 
  * @param {String} uri 
+ * @param {String} password 
  */
-function seed(uri) {
-    const accounts = parseAccountsFromUri(uri);
+function seed(uri, password) {
     try {
+        let accounts = parseAccountsFromUri(uri);
+        const accountLength = accounts.length
+        accounts = JSON.stringify(accounts);
+        const backup_file_data = {
+            is_encrypted: !!password,
+            accounts: password ? encrypt(accounts, password) : accounts
+        }
         fs.ensureDirSync(BACKUP_DIR_FILE_PATH)
-        fs.writeFileSync(BACKUP_ACCOUNT_FILE_PATH, JSON.stringify(accounts));
-        console.log(`${accounts.length} account(s) imported successfully`);
+        fs.writeFileSync(BACKUP_ACCOUNT_FILE_PATH, JSON.stringify(backup_file_data));
+        console.log(`${accountLength} account(s) imported successfully`);
     } catch (error) {
         //TODO: Hanlde error
         throw error;
@@ -126,7 +168,7 @@ function seed(uri) {
  * Delete accounts backup file from local
  * 
  */
-function flush() {
+function flushAll() {
 
     try {
         fs.unlinkSync(BACKUP_ACCOUNT_FILE_PATH);
@@ -138,8 +180,10 @@ function flush() {
 }
 
 module.exports = {
-    check,
+    isValidBackupFile,
+    isEncrypted,
+    isValid,
     get,
     seed,
-    flush
+    flushAll
 }

@@ -55,11 +55,12 @@ function updateTotp(accounts) {
 
 /**
  * Run authenticator on CMD
+ * @param {String} password 
  */
-function run() {
+function run(password) {
     console.log("Starting authenticator ...");
     let tr_timeout = 1000; //Table refresh timeout for expiry timer
-    let _accounts = accounts.get();
+    let _accounts = accounts.get(password);
     if (_accounts && Object.keys(_accounts).length) {
         console.log(`${Object.keys(_accounts).length} account(s) found`);
         updateTotp(_accounts);

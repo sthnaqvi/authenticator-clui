@@ -5,39 +5,62 @@
 const { program } = require('commander');
 
 const authenticator = require('./src/lib');
+const PasswordPrompt = require('./src/PasswordPrompt');
+const passwordPrompt = new PasswordPrompt({ promptMsg: "Enter password: " });
 
 program
     .name("authenticator")
     .usage("A simple command-line authenticator (import accounts from Google Authenticator, Microsoft Authenticator and Facebook Authenticator)")
     .option('-i, --import <import otpauth-migration url>', 'Import account(s), Authenticator exported accounts URI like "otpauth-migration://offline?data=xyz" make sure URI in "double quotes" (Use QR reader to get this from export QR code)')
+    .option('-en, --encrypt', 'Encrypt your imported account with AES256 encryption using a strong password')
     .option('-d, --delete', 'Delete imported accounts !!!Can\'t restore')
+    .option('-f, --force', 'Forcefully execute operations')
     .option('-r, --run', 'Run authenticator with imported accounts')
     .parse(process.argv);
 
-const options = program.opts();
+const processOpts = async (options) => {
+    let password = "";
+    if (options && Object.keys(options).length) {
 
-if (options && Object.keys(options).length) {
-    if (options.import) {
-        if (authenticator.accounts.check()) {
-            console.error("Accounts already exist, delete existing accounts before import");
-            return program.help({ error: true });
+        if (options.import) {
+            if (authenticator.accounts.isValidBackupFile()) {
+                console.error("Accounts already exist, delete existing accounts before import");
+                return program.help({ error: true });
+            }
+            if (options.encrypt) {
+                password = await passwordPrompt.start();
+            };
+            authenticator.accounts.seed(options.import, password)
         }
-        authenticator.accounts.seed(options.import)
-    }
-    if (options.delete) {
-        if (!authenticator.accounts.check()) {
-            console.error("Accounts does not exist");
-            return program.help({ error: true });
+
+        if (!options.force) {
+            if (!authenticator.accounts.isValidBackupFile()) {
+                console.error("Accounts does not exist");
+                return program.help({ error: true });
+            }
+            if (authenticator.accounts.isEncrypted()) {
+                password = await passwordPrompt.start();
+            };
+            if (!authenticator.accounts.isValid(password)) {
+                console.error(`${password ? "!!Invalid password" : "Account(s) are not valid."}`);
+                return program.help({ error: true });
+            }
         }
-        authenticator.accounts.flush();
-    }
-    if (options.run) {
-        if (!authenticator.accounts.check()) {
-            console.error("Accounts does not exist, import accounts first");
-            return program.help({ error: true });
+
+        if (options.delete) {
+            authenticator.accounts.flushAll();
         }
-        authenticator.run();
-    }
-} else {
-    program.help({ error: true });
-};
+
+        if (options.run) {
+            if (options.force) {
+                console.error("Can't run with --force");
+                return program.help({ error: true });
+            }
+            authenticator.run(password);
+        }
+    } else {
+        program.help({ error: true });
+    };
+}
+
+processOpts(program.opts())

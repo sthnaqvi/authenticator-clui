@@ -14,54 +14,40 @@
 ![Downloads Monthly](https://img.shields.io/npm/dm/authenticator-clui.svg)
 
 
-A simple command-line authenticator (import accounts from Google Authenticator, Microsoft Authenticator and Facebook Authenticator)
+A simple command-line authenticator with encryption (import accounts from Google Authenticator, Microsoft Authenticator and Facebook Authenticator)
 
 ![alt text](https://github.com/sthnaqvi/authenticator-clui/raw/master/readme_assets/cli_authenticator.png "CLI Authenticator")
 
 
-## Table of contents
+# Table of contents
 
+- [authenticator-clui](#authenticator-clui)
+- [Table of contents](#table-of-contents)
 - [Installation](#installation)
-- [Run Authenticator](#run-authenticator)
+  - [Install with npm globally:](#install-with-npm-globally)
+- [Steps to export accounts from Google Authenticator](#steps-to-export-accounts-from-google-authenticator)
+  - [Get accounts URI](#get-accounts-uri)
 - [Import Accounts](#import-accounts)
-- [Export Accounts](#steps-to-export-accounts-from-google-authenticator)
+  - [Import without encryption](#import-without-encryption)
+  - [Import with encryption](#import-with-encryption)
+- [Run Authenticator](#run-authenticator)
+  - [Run authenticator with imported account(s)](#run-authenticator-with-imported-accounts)
 - [Permission denied when installing npm modules in OSX](#permission-denied-when-installing-npm-modules-in-osx)
+  - [Option 1: Change the permission to npm's default directory](#option-1-change-the-permission-to-npms-default-directory)
+  - [Option 2: Change npm's default directory to another directory](#option-2-change-npms-default-directory-to-another-directory)
+  - [Option 3: Use a package manager that takes care of this for you.](#option-3-use-a-package-manager-that-takes-care-of-this-for-you)
 
 
-## Installation
+# Installation
 
-### Install with npm globally:
+## Install with npm globally:
 
 ```
 npm install -g authenticator-clui
 ```
 
----
-## Run Authenticator
-### Run authenticator with imported account(s)
-
-```
-authenticator --run
-```
-[back to top](#table-of-contents)
-
----
-## Import Accounts
-
-### Use [export accounts steps](#steps-to-export-accounts-from-google-authenticator) and copy URI from your phone then run `--import <with copy URI>`
-
-```
-authenticator --import "otpauth-migration://offline?data=CicKFFFFNi94eGM5bGxUUWlQcWxJSjU0EgR0ZXN0GgNvdHAgASgBMAIQARgBIAA%3D"
-```
-* Don't forgot to use `"double quotes"` in account URI
-
-[back to top](#table-of-contents)
-
----
-## Steps to export accounts from Google Authenticator
-
-### Get accounts URI
-
+# Steps to export accounts from Google Authenticator
+## Get accounts URI
 - Open `Google Authenticator` click on `...`
 - Click `Export accounts` 
 - Click `Continue` select the account(s) which you want to export
@@ -72,13 +58,38 @@ Use [online QRcode decoder to decode](https://zxing.org) the QRcode and get the 
 <img src="https://github.com/sthnaqvi/authenticator-clui/raw/master/readme_assets/export_authenticator_backup.gif" alt="export URI from Google Authenticator" height="550">
 </p>
 
-[back to top](#table-of-contents)
-___
+# Import Accounts
+## Import without encryption
 
-## Permission denied when installing npm modules in OSX
+Use [export accounts steps](#steps-to-export-accounts-from-google-authenticator) and copy URI from your phone then run `--import <with copy URI>`
+
+```
+authenticator --import "otpauth-migration://offline?data=CicKFFFFNi94eGM5bGxUUWlQcWxJSjU0EgR0ZXN0GgNvdHAgASgBMAIQARgBIAA%3D"
+```
+
+## Import with encryption
+
+Encrypt accounts data with [AES256 encryption](https://github.com/sthnaqvi/authenticator-clui/blob/master/src/encryption.js) using a strong password. The authenticator will ask the password every time when you run.
+
+```
+authenticator --encrypt --import "otpauth-migration://offline?data=CicKFFFFNi94eGM5bGxUUWlQcWxJSjU0EgR0ZXN0GgNvdHAgASgBMAIQARgBIAA%3D"
+```
+* Don't forgot to use `"double quotes"` in account URI
+
+</br>
+
+# Run Authenticator
+## Run authenticator with imported account(s)
+
+```
+authenticator --run
+```
+* If your account will encrypted then every time when you run the authenticator it will ask for the **password**
+
+# Permission denied when installing npm modules in OSX
 Saw this from [Fixing npm permissions](https://docs.npmjs.com/getting-started/fixing-npm-permissions) and it helped, maybe you could give it a shot as well. 
 
-### Option 1: Change the permission to npm's default directory
+## Option 1: Change the permission to npm's default directory
 
 1. Find the path to npm's directory:
 
@@ -94,7 +105,7 @@ Saw this from [Fixing npm permissions](https://docs.npmjs.com/getting-started/fi
 
  This changes the permissions of the sub-folders used by npm and some other tools (`lib/node_modules`, `bin`, and `share`).
 
-### Option 2: Change npm's default directory to another directory
+## Option 2: Change npm's default directory to another directory
 
 There are times when you do not want to change ownership of the default directory that npm uses (i.e. `/usr`) as this could cause some problems, for example if you are sharing the system with other users.
 
@@ -124,12 +135,8 @@ Instead of steps 2-4, you can use the corresponding ENV variable (e.g. if you do
 
     NPM_CONFIG_PREFIX=~/.npm-global
 
-### Option 3: Use a package manager that takes care of this for you.
+## Option 3: Use a package manager that takes care of this for you.
 
 If you're doing a fresh install of Node on Mac OS, you can avoid this problem altogether by using the `Homebrew` package manager. `Homebrew` sets things up out of the box with the correct permissions.
 
 `brew install node`
-
-[back to top](#table-of-contents)
-
----
